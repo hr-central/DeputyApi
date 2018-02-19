@@ -52,7 +52,7 @@ namespace DeputyApi.Tests
             await InvokeClient();
 
             _httpMock.Verify(h => h.MakeRequestAsync(
-                It.Is<HttpMethod>(m => m == HttpMethod.Get),
+                It.Is<HttpMethod>(m => m == ExpectedMethod),
                 It.Is<string>(s => s.Equals(ExpectedEndpoint)),
                 It.IsAny<IDictionary<string, string>>(),
                 It.IsAny<IDictionary<string, string>>(),
@@ -62,6 +62,7 @@ namespace DeputyApi.Tests
 
         protected abstract Task InvokeClient();
         protected abstract HttpResponseMessage TestResponse { get; }
+        protected abstract HttpMethod ExpectedMethod { get; }
         protected abstract string ExpectedEndpoint { get; }
     }
 }

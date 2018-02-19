@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using DeputyApi.Authentication;
 using DeputyApi.Models;
+using DeputyApi.Resources;
 using DeputyApi.Serialization;
 using DeputyApi.Transport;
 
@@ -23,8 +24,10 @@ namespace DeputyApi
         {
             _authenticator = authenticator;
             _httpClient = httpClient;
+            Employees = new EmployeeResourceEndpoint(_authenticator, _httpClient, _serializer);
         }
 
+        public IResourceEndpoint<EmployeeModel, int> Employees { get; }
 
         public async Task<UserModel> GetMeAsync()
         {

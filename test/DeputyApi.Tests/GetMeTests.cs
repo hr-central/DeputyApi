@@ -12,6 +12,8 @@ namespace DeputyApi.Tests
 
         protected override string ExpectedEndpoint => "me";
 
+        protected override HttpMethod ExpectedMethod => HttpMethod.Get;
+
         protected override async Task InvokeClient() => await _deputyClient.GetMeAsync();
     }
 }
