@@ -24,9 +24,11 @@ namespace DeputyApi
         {
             _authenticator = authenticator;
             _httpClient = httpClient;
+            Contacts = new ContactResourceEndpoint(_authenticator, _httpClient, _serializer);
             Employees = new EmployeeResourceEndpoint(_authenticator, _httpClient, _serializer);
         }
 
+        public IResourceEndpoint<ContactModel, int> Contacts { get; }
         public IResourceEndpoint<EmployeeModel, int> Employees { get; }
 
         public async Task<UserModel> GetMeAsync()
