@@ -10,6 +10,8 @@ namespace DeputyApi.Serialization
             NullValueHandling = NullValueHandling.Ignore
         };
 
+        public string Serialize<T>(T model) => JsonConvert.SerializeObject(model, Settings);
+
         public T Deserialize<T>(string serialized)
         {
             if (string.IsNullOrEmpty(serialized))
