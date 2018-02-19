@@ -24,10 +24,13 @@ namespace DeputyApi
         {
             _authenticator = authenticator;
             _httpClient = httpClient;
+
+            Addresses = new AddressResourceEndpoint(_authenticator, _httpClient, _serializer);
             Contacts = new ContactResourceEndpoint(_authenticator, _httpClient, _serializer);
             Employees = new EmployeeResourceEndpoint(_authenticator, _httpClient, _serializer);
         }
 
+        public IResourceEndpoint<AddressModel, int> Addresses { get; }
         public IResourceEndpoint<ContactModel, int> Contacts { get; }
         public IResourceEndpoint<EmployeeModel, int> Employees { get; }
 
