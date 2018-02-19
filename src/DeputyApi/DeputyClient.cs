@@ -11,17 +11,20 @@ namespace DeputyApi
     public class DeputyClient : IDeputyClient
     {
         private readonly IAuthenticator _authenticator;
-        private readonly DeputyOptions _options;
+        private readonly IHttpClient _httpClient;
         private readonly JsonSerializer _serializer = new JsonSerializer();
 
         public DeputyClient(IAuthenticator authenticator, DeputyOptions options)
+            : this(authenticator, options, new Transport.HttpClient(GetBaseUri(options)))
         {
-            _authenticator = authenticator;
-            _options = options;
-            HttpClient = new Transport.HttpClient(GetBaseUri(options));
         }
 
-        public IHttpClient HttpClient { get; set; }
+        public DeputyClient(IAuthenticator authenticator, DeputyOptions options, IHttpClient httpClient)
+        {
+            _authenticator = authenticator;
+            _httpClient = httpClient;
+        }
+
 
         public async Task<UserModel> GetMeAsync()
         {

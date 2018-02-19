@@ -36,10 +36,7 @@ namespace DeputyApi.Tests
                 It.IsAny<IDictionary<string, string>>(),
                 It.IsAny<string>())).ReturnsAsync(TestResponse);
 
-            _deputyClient = new DeputyClient(_authenticator, TestHelpers.TestOptions)
-            {
-                HttpClient = _httpMock.Object
-            };
+            _deputyClient = new DeputyClient(_authenticator, TestHelpers.TestOptions, _httpMock.Object);
         }
 
         [Fact]
