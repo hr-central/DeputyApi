@@ -1,7 +1,6 @@
+using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Flurl;
 using DeputyApi.Authentication;
 using DeputyApi.Models;
 using DeputyApi.Serialization;
@@ -19,33 +18,20 @@ namespace DeputyApi
         {
             _authenticator = authenticator;
             _options = options;
+            HttpClient = new Transport.HttpClient(GetBaseUri(options));
         }
 
-        public IHttpClient HttpClient { get; set; } = new Transport.HttpClient();
+        public IHttpClient HttpClient { get; set; }
 
         public async Task<UserModel> GetMeAsync()
         {
-            var response = await MakeRequest(HttpMethod.Get, "me");
+            var token = await _authenticator.GetAccessTokenAsync();
+            var headers = new Dictionary<string, string>() { { "Authorization", "Bearer " + token } };
+            var response = await _httpClient.MakeRequestAsync(HttpMethod.Get, "me", headers: headers);
             var responseBody = await response.Content.ReadAsStringAsync();
             return _serializer.Deserialize<UserModel>(responseBody);
         }
 
-        private async Task<HttpResponseMessage> MakeRequest(HttpMethod method, string uri, object query = null)
-        {
-            var requestUri = BuildUri(uri, query);
-            var request = new HttpRequestMessage(method, requestUri);
-            var token = await _authenticator.GetAccessTokenAsync();
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return await HttpClient.MakeRequestAsync(request);
-        }
-
-        private string BuildUri(string uri, object query) =>
-            GetBaseUri(_options)
-            .AppendPathSegment(uri)
-            .SetQueryParams(query)
-            .ToString();
-
-        private Url GetBaseUri(DeputyOptions options)
-            => new Url($"https://{options.Subdomain}.{options.Region}.deputy.com/api/{options.ApiVersion}");
+        private static string GetBaseUri(DeputyOptions options) => $"https://{options.Subdomain}.{options.Region}.deputy.com/api/{options.ApiVersion}";
     }
 }

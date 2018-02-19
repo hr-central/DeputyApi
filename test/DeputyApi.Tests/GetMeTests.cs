@@ -1,6 +1,5 @@
-using System;
+using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net;
 using System.Threading.Tasks;
 using Moq;
@@ -14,8 +13,6 @@ namespace DeputyApi.Tests
     [Trait("Endpoint", "Get Me")]
     public class GetMeTests
     {
-        private static readonly AuthenticationHeaderValue ExpectedAuthorizationHeader = new AuthenticationHeaderValue("Bearer", "some_token");
-        private static readonly Uri ExpectedEndpoint = new Uri("https://mysubdomain.au.deputy.com/api/v1/me");
         private static readonly HttpResponseMessage TestResponse = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(@"{""Name"":""Test Person""}")
@@ -32,7 +29,12 @@ namespace DeputyApi.Tests
             _authenticator = authMock.Object;
 
             _httpMock = new Mock<IHttpClient>();
-            _httpMock.Setup(h => h.MakeRequestAsync(It.IsAny<HttpRequestMessage>())).ReturnsAsync(TestResponse);
+            _httpMock.Setup(h => h.MakeRequestAsync(
+                HttpMethod.Get,
+                "me",
+                It.IsAny<IDictionary<string, string>>(),
+                It.IsAny<IDictionary<string, string>>(),
+                It.IsAny<string>())).ReturnsAsync(TestResponse);
 
             _deputyClient = new DeputyClient(_authenticator, TestHelpers.TestOptions)
             {
@@ -41,22 +43,30 @@ namespace DeputyApi.Tests
         }
 
         [Fact]
-        public async Task Get_Me_Includes_Authentication_Token()
+        public async Task Includes_Authorization_Token()
         {
             await _deputyClient.GetMeAsync();
 
-            _httpMock.Verify(h => h
-                .MakeRequestAsync(It.Is<HttpRequestMessage>(r => TestHelpers.VerifyAuthorizationHeader(r, ExpectedAuthorizationHeader))),
+            _httpMock.Verify(h => h.MakeRequestAsync(
+                It.IsAny<HttpMethod>(),
+                It.IsAny<string>(),
+                It.IsAny<IDictionary<string, string>>(),
+                It.Is<IDictionary<string, string>>(headers => headers["Authorization"] == "Bearer some_token"),
+                It.IsAny<string>()),
                 Times.Once);
         }
 
         [Fact]
-        public async Task Get_Me_Requests_Correct_Endpoint()
+        public async Task Requests_Correct_Endpoint()
         {
             await _deputyClient.GetMeAsync();
 
-            _httpMock.Verify(h => h
-                .MakeRequestAsync(It.Is<HttpRequestMessage>(r => r.RequestUri == ExpectedEndpoint)),
+            _httpMock.Verify(h => h.MakeRequestAsync(
+                It.Is<HttpMethod>(m => m == HttpMethod.Get),
+                It.Is<string>(p => p.Equals("me")),
+                It.IsAny<IDictionary<string, string>>(),
+                It.IsAny<IDictionary<string, string>>(),
+                It.IsAny<string>()),
                 Times.Once);
         }
     }
