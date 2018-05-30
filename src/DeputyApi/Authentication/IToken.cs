@@ -7,5 +7,6 @@ namespace DeputyApi.Authentication
         string AccessToken { get; }
         string RefreshToken { get; }
         TimeSpan ExpiresIn { get; }
+        bool HasExpired();
     }
 }
