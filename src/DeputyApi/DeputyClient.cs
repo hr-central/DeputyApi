@@ -43,6 +43,6 @@ namespace DeputyApi
             return _serializer.Deserialize<UserModel>(responseBody);
         }
 
-        private static string GetBaseUri(DeputyOptions options) => $"https://{options.Subdomain}.{options.Region}.deputy.com/api/{options.ApiVersion}";
+        private static string GetBaseUri(DeputyOptions options) => $"https://{options.Endpoint}/api/{options.ApiVersion}";
     }
 }
