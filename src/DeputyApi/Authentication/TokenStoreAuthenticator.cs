@@ -62,6 +62,6 @@ namespace DeputyApi.Authentication
                 expiresIn: TimeSpan.FromSeconds(jobj["expires_in"].ToObject<int>()));
         }
 
-        private static string GetRefreshUri(DeputyOptions options) => $"https://{options.Subdomain}.{options.Region}.deputy.com/oauth/access_token";
+        private static string GetRefreshUri(DeputyOptions options) => $"https://{options.Endpoint}/oauth/access_token";
     }
 }
