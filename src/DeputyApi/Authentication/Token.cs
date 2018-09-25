@@ -8,6 +8,7 @@ namespace DeputyApi.Authentication
         {
             AccessToken = accessToken;
             RefreshToken = refreshToken;
+            IssuedAt = issuedAt;
             ExpiresIn = expiresIn;
         }
 
